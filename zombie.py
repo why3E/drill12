@@ -4,7 +4,7 @@ import game_framework
 
 from pico2d import *
 
-from Lecture15_Collision import game_world
+import game_world
 
 # zombie Run Speed
 PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
