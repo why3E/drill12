@@ -4,6 +4,8 @@ import game_framework
 
 from pico2d import *
 
+from Lecture15_Collision import game_world
+
 # zombie Run Speed
 PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
 RUN_SPEED_KMPH = 10.0  # Km / Hour
@@ -20,6 +22,7 @@ animation_names = ['Walk']
 
 class Zombie:
     images = None
+
     def load_images(self):
         if Zombie.images == None:
             Zombie.images = {}
@@ -31,35 +34,33 @@ class Zombie:
         self.load_images()
         self.frame = random.randint(0, 9)
         self.dir = random.choice([-1,1])
-        self.Hp = 5
+        self.size = 200
 
 
     def update(self):
-        if(self.Hp !=0):
-            self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION
-            self.x += RUN_SPEED_PPS * self.dir * game_framework.frame_time
-            if self.x > 1600:
-                self.dir = -1
-            elif self.x < 800:
-                self.dir = 1
-            self.x = clamp(800, self.x, 1600)
-            pass
+        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION
+        self.x += RUN_SPEED_PPS * self.dir * game_framework.frame_time
+        if self.x > 1600:
+            self.dir = -1
+        elif self.x < 800:
+            self.dir = 1
+        self.x = clamp(800, self.x, 1600)
+        pass
 
 
     def draw(self):
-        if self.dir < 0:
-            Zombie.images['Walk'][int(self.frame)].composite_draw(0, 'h', self.x, self.y, 200, 200)
-        else:
-            Zombie.images['Walk'][int(self.frame)].draw(self.x, self.y, 200, 200)
+        if (self.size > 0):
+            if self.dir < 0:
+                Zombie.images['Walk'][int(self.frame)].composite_draw(0, 'h', self.x, self.y, self.size, self.size)
+            else:
+                Zombie.images['Walk'][int(self.frame)].draw(self.x, self.y, self.size, self.size)
         draw_rectangle(*self.get_bb())
-
-    def handle_event(self, event):
-        pass
 
     def handle_collision(self, group, other):
         if group == 'zombie:ball':
-            self.Hp -= 1
-            pass
+            self.size -= 100
+            self.y -= 50
 
     def get_bb(self):
-        return self.x - 50, self.y - 100, self.x + 50, self.y + 50
+        return self.x - self.size/4 , self.y - self.size/4, self.x + self.size/4, self.y + self.size/4
+

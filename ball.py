@@ -13,6 +13,7 @@ class Ball:
     def draw(self):
         self.image.draw(self.x, self.y)
         draw_rectangle(*self.get_bb())
+
     def update(self):
         self.x += self.velocity * 100 * game_framework.frame_time
 
@@ -23,7 +24,7 @@ class Ball:
     def get_bb(self):
         return self.x - 10, self.y - 10, self.x + 10, self.y + 10
 
-    def handle_collision(self, group, other):
+    def handle_collision(self, group,other):
         if group == 'boy:ball':
             game_world.remove_object(self)
         elif group == 'zombie:ball':

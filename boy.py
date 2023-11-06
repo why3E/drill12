@@ -2,13 +2,9 @@
 
 from pico2d import get_time, load_image, load_font, clamp, SDL_KEYDOWN, SDL_KEYUP, SDLK_SPACE, SDLK_LEFT, SDLK_RIGHT, \
     draw_rectangle
-
-import play_mode
-import zombie
 from ball import Ball
 import game_world
 import game_framework
-from zombie import Zombie
 
 
 # state event check
@@ -82,6 +78,7 @@ class Idle:
     @staticmethod
     def draw(boy):
         boy.image.clip_draw(int(boy.frame) * 100, boy.action * 100, 100, 100, boy.x, boy.y)
+
 
 
 class Run:
@@ -167,6 +164,7 @@ class StateMachine:
         self.cur_state.draw(self.boy)
 
 
+
 class Boy:
     def __init__(self):
         self.x, self.y = 50, 90
@@ -184,9 +182,8 @@ class Boy:
         if self.ball_count > 0:
             self.ball_count -= 1
             ball = Ball(self.x, self.y, self.face_dir * 10)
-            zombie = play_mode.Zombie()
             game_world.add_object(ball)
-            game_world.add_collision_pair('zombie:ball', None, ball)
+            game_world.add_collision_pair('zombie:ball', ball, None)
 
     def update(self):
         self.state_machine.update()
@@ -197,12 +194,14 @@ class Boy:
     def draw(self):
         self.state_machine.draw()
         self.font.draw(self.x - 10, self.y + 50, f'{self.ball_count:02d}', (255, 255, 0))
-        draw_rectangle(*self.get_bb()) # 튜플을 풀어헤쳐서 각각 인자로 전달
+        draw_rectangle(*self.get_bb())
 
     # fill here
     def get_bb(self):
-        return self.x - 50, self.y - 50, self.x + 50, self.y + 50
+        return self.x - 20, self.y - 50, self.x + 20, self.y + 50
 
     def handle_collision(self, group, other):
         if group == 'boy:ball':
             self.ball_count += 1
+        if group == 'boy:zombie':
+            quit()
